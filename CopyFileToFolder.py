@@ -3,9 +3,9 @@ import os
 import pandas
 
 src="SOURCE OF DIRECTORY WHERE YOU WANT TO SEARCH"              #example: D:\demo
-dest_1="DESTINATION DIRECTORY WHERE YOU WANT TO COPY THAT FILE CLASS 1"   #example: D:\DemoCopy
-dest_0="DESTINATION DIRECTORY WHERE YOU WANT TO COPY THAT FILE CLASS 0"   #example: D:\DemoCopy
-search_dataset_file="CSV FILE THAT CONTAINS ALL THE FILENAMES TO COPY AND RESPECTIVE CLASS"      #example: "Dataset.csv"
+dest_1="DESTINATION DIRECTORY WHERE YOU WANT TO COPY THAT FILE FOR CLASS 1"   #example: D:\DemoCopy
+dest_0="DESTINATION DIRECTORY WHERE YOU WANT TO COPY THAT FILE FOR CLASS 0"   #example: D:\DemoCopy
+search_dataset_file="CSV DATASET THAT CONTAINS THE FILENAME TO BE SEARCHED"      #example: "Dataset.csv"
 search_success_count=0  # number of file that have been successfully searched
 search_target_count=0   # targeted number of file to be searched
 extension="jpg"         #example: "jpg, png..."
@@ -39,23 +39,45 @@ def checkFile(src,search_dataset_file,extension):
         # join filename and extension
         joiner='.'
         full_search_file_name=joiner.join([str(search_file_name),extension])
+        # full path of search image
+        full_search_file_name_path=os.path.join(src,full_search_file_name)
 
-        #loop through target file name in the source folder
-        for full_target_file_name in src_file:
-            #this create a path by joining src and file_name
-            full_target_file_name_path = os.path.join(src, full_target_file_name)
-
-            # if target filename equal top search filename
-            if full_target_file_name == full_search_file_name:
-
-                if (search_class[index] == 1):
+        # check the class of the image
+        if (search_class[index] == 1):
+            # check if file already exist in the destination folder
+            if (os.path.isfile(os.path.join(dest_1,full_search_file_name))==False):
+                # try to copy if file exist in the source folder
+                try:
                     # Copy the file to the destination folder class 1
-                    shutil.copy(full_target_file_name_path, dest_1)                  
-                elif (search_class[index] == 0):     
+                    shutil.copy(full_search_file_name_path, dest_1)
+                    # display string
+                    string_to_disp=''.join(["Copy ",full_search_file_name," to \early"])
+                    print(string_to_disp)
+                    # increment of file count    
+                    search_success_count += 1
+                # if file does not exist in source folder
+                except:
+                    print("File not exist")        
+            else:
+                print("File already exist")          
+        elif (search_class[index] == 0):
+            # check if file already exist in the destination folder
+            if (os.path.isfile(os.path.join(dest_0,full_search_file_name))==False):
+                # try to copy if file exist in the source folder     
+                try:
                     # Copy the file to the destination folder class 0
-                    shutil.copy(full_target_file_name_path, dest_0)                 
-                # increment of file count     
-                search_success_count += 1
+                    shutil.copy(full_search_file_name_path, dest_0)
+                    # display string
+                    string_to_disp=''.join(["Copy ",full_search_file_name," to \late"])
+                    print(string_to_disp)    
+                    # increment of file count                
+                    search_success_count += 1
+                except:
+                    print("File not exist")
+            # if file does not exist in source folder
+            else:
+                print("File already exist")         
+             
         index += 1
 
 checkFile(src,search_dataset_file,extension)
